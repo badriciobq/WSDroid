@@ -1,0 +1,8 @@
+Flask==0.9
+Jinja2==2.6
+Werkzeug==0.8.3
+argparse==1.2.1
+metlog-psutils==0.1
+metlog-py==0.9.7
+psutil==0.6.1
+wsgiref==0.1.2
