@@ -10,8 +10,10 @@ def usage():
     
         resp = jsonify(get_index())
         resp.status_code = 200
-        
         return resp
+        
+    else:
+        abort(404)
         
         
 def list_hd(index=None):
@@ -89,6 +91,10 @@ def list_network(index=None):
         resp.status_code = 200
         
         return resp
+        
+    elif request.method == 'POST':
+        return 'Metodo Post\n'
+        
     else:
         abort(404)
             
