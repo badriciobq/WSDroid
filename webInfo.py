@@ -15,7 +15,6 @@ class webService():
         self.app = Flask(__name__)
         self.link_url_method()
         self.app.error_handler_spec[None][404] = self.not_found
-        self.app.error_handler_spec[None][401] = self.forbiden
         
         self.app.run(IP, PORT, DEBUG)
 
