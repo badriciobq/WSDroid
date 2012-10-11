@@ -1,9 +1,9 @@
 # coding: utf-8
 
-# Configura o IP que rodará o servidor
-IP = '127.0.0.1'
+# Configura o IP do WebService
+IP = '192.168.1.100'
 
-# Porta que o webService escutará
+# Configura a porta do webService
 PORT = 8001
 
 # Habilita o modo debug (CUIDADO)
@@ -20,8 +20,5 @@ MAPURL = ( ('/', 'usage'),
 )
 
 # Configura se o servidor terá autenticação
-AUTENTICATION = False
-
-# Informações sobre criptografia
-ENCRIPT = False
+AUTENTICATION = True
 
