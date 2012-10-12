@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>webService.application &mdash; WSDroid 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="WSDroid 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">WSDroid 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for webService.application</h1><div class="highlight"><pre>
+<span class="c"># coding: utf-8</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">abort</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+
+<div class="viewcode-block" id="usage"><a class="viewcode-back" href="../../application.html#webService.application.usage">[docs]</a><span class="k">def</span> <span class="nf">usage</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retorna todas as informações do computador no formato JSON, caso a</span>
+<span class="sd">    requisição não seja to tipo GET, ele retorna uma página mensagem</span>
+<span class="sd">    informando que a página não foi encontrada.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">get_index</span><span class="p">())</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="k">return</span> <span class="n">resp</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="list_hd"><a class="viewcode-back" href="../../application.html#webService.application.list_hd">[docs]</a><span class="k">def</span> <span class="nf">list_hd</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retorna informações do HD por completo se a url terminar com &#39;hardDisk&#39;</span>
+<span class="sd">    ou retorna as informação de uma partição especifica se a url terminar</span>
+<span class="sd">    com o ponto de montagem da partição. As informações são retornadas no</span>
+<span class="sd">    formato JSON e contém os seguintes campos::</span>
+
+<span class="sd">    &quot;hardDisk&quot;: {</span>
+<span class="sd">    &quot;sda5&quot;: {</span>
+<span class="sd">    &quot;used&quot;: 113527726080,</span>
+<span class="sd">    &quot;percent&quot;: 56.5,</span>
+<span class="sd">    &quot;free&quot;: 77170294784,</span>
+<span class="sd">    &quot;fstype&quot;: &quot;ext4&quot;,</span>
+<span class="sd">    &quot;device&quot;: &quot;/dev/sda5&quot;,</span>
+<span class="sd">    &quot;mountpoint&quot;: &quot;/home&quot;,</span>
+<span class="sd">    &quot;total&quot;: 200903335936,</span>
+<span class="sd">    &quot;opts&quot;: &quot;rw&quot;}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">index</span><span class="p">:</span>
+            <span class="n">dic</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;hardDisk&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dic</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;hardDisk&#39;</span><span class="p">)</span>
+
+        <span class="n">dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">})</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="list_mem"><a class="viewcode-back" href="../../application.html#webService.application.list_mem">[docs]</a><span class="k">def</span> <span class="nf">list_mem</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retorna informações da Memória. As informações são retornadas no</span>
+<span class="sd">    formato JSON e contém os seguintes campos::</span>
+
+<span class="sd">    &quot;memory&quot;: {</span>
+<span class="sd">    &quot;total&quot;: 3938222080,</span>
+<span class="sd">    &quot;available&quot;: 2748809216,</span>
+<span class="sd">    &quot;percent&quot;: 30.2,</span>
+<span class="sd">    &quot;used&quot;: 2607411200,</span>
+<span class="sd">    &quot;free&quot;: 1330810880,</span>
+<span class="sd">    &quot;active&quot;: 1424625664,</span>
+<span class="sd">    &quot;inactive&quot;: 882995200,</span>
+<span class="sd">    &quot;buffers&quot;: 333889536,</span>
+<span class="sd">    &quot;cached&quot;: 1084108800 }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;memory&#39;</span><span class="p">)</span>
+        <span class="n">dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">})</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="list_cpu"><a class="viewcode-back" href="../../application.html#webService.application.list_cpu">[docs]</a><span class="k">def</span> <span class="nf">list_cpu</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retorna informações do processador. As informações são retornadas no</span>
+<span class="sd">    formato JSON e contém os seguintes campos::</span>
+
+<span class="sd">    &quot;cpu&quot;: {</span>
+<span class="sd">    &quot;idle&quot;: 38719.49,</span>
+<span class="sd">    &quot;softirq&quot;: 6.36,</span>
+<span class="sd">    &quot;irq&quot;: 0.0,</span>
+<span class="sd">    &quot;iowait&quot;: 347.69,</span>
+<span class="sd">    &quot;nice&quot;: 26.94,</span>
+<span class="sd">    &quot;percent&quot;: 28.2,</span>
+<span class="sd">    &quot;system&quot;: 264.54,</span>
+<span class="sd">    &quot;user&quot;: 922.46 }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;cpu&#39;</span><span class="p">)</span>
+        <span class="n">dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">})</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">list_network</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retorna informações de rede no formato JSON::</span>
+
+<span class="sd">    &quot;eth1&quot;: {</span>
+<span class="sd">    &quot;packets_sent&quot;: 40252,</span>
+<span class="sd">    &quot;packets_recv&quot;: 41426,</span>
+<span class="sd">    &quot;bytes_recv&quot;: 36079799,</span>
+<span class="sd">    &quot;dropout&quot;: 0,</span>
+<span class="sd">    &quot;bytes_sent&quot;: 6338471,</span>
+<span class="sd">    &quot;errout&quot;: 18,</span>
+<span class="sd">    &quot;ipv4&quot;: &quot;192.168.1.100&quot;,</span>
+<span class="sd">    &quot;errin&quot;: 0,</span>
+<span class="sd">    &quot;dropin&quot;: 0,</span>
+<span class="sd">    &quot;masc&quot;: &quot;255.255.255.0&quot; }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;netw&#39;</span><span class="p">)</span>
+        <span class="n">dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">})</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="list_network"><a class="viewcode-back" href="../../application.html#webService.application.list_network">[docs]</a><span class="k">def</span> <span class="nf">list_network</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retorna informações da interface de rede específicada na url</span>
+<span class="sd">    no formato JSON::</span>
+
+<span class="sd">    &quot;eth1&quot;: {</span>
+<span class="sd">    &quot;packets_sent&quot;: 40252,</span>
+<span class="sd">    &quot;packets_recv&quot;: 41426,</span>
+<span class="sd">    &quot;bytes_recv&quot;: 36079799,</span>
+<span class="sd">    &quot;dropout&quot;: 0,</span>
+<span class="sd">    &quot;bytes_sent&quot;: 6338471,</span>
+<span class="sd">    &quot;errout&quot;: 18,</span>
+<span class="sd">    &quot;ipv4&quot;: &quot;192.168.1.100&quot;,</span>
+<span class="sd">    &quot;errin&quot;: 0,</span>
+<span class="sd">    &quot;dropin&quot;: 0,</span>
+<span class="sd">    &quot;masc&quot;: &quot;255.255.255.0&quot;}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">index</span><span class="p">:</span>
+            <span class="n">dic</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;netw&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dic</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;netw&#39;</span><span class="p">)</span>
+
+        <span class="n">dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">})</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+
+    <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;Metodo Post</span><span class="se">\n</span><span class="s">&#39;</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_index"><a class="viewcode-back" href="../../application.html#webService.application.get_index">[docs]</a><span class="k">def</span> <span class="nf">get_index</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Coleta as informações da Memória, HD, Rede e Processadores do computador</span>
+<span class="sd">    e retorna um dicionário contendo todas as informações::</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dic_ret</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">dic_ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">})</span>
+
+    <span class="c"># Coleta informação de memória</span>
+    <span class="n">mem</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span>
+    <span class="n">dic_ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;memory&#39;</span><span class="p">:</span> <span class="n">mem</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()})</span>
+
+    <span class="c"># Coleta informação do HD</span>
+    <span class="n">hd</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">psutil</span><span class="o">.</span><span class="n">disk_partitions</span><span class="p">():</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">aux</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">_asdict</span><span class="p">())</span>
+        <span class="n">aux</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">mountpoint</span><span class="p">)</span><span class="o">.</span><span class="n">_asdict</span><span class="p">())</span>
+        <span class="n">hd</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">i</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">aux</span><span class="p">})</span>
+    <span class="n">dic_ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;hardDisk&#39;</span><span class="p">:</span> <span class="n">hd</span><span class="p">})</span>
+
+    <span class="c"># Coleta informação do CPU</span>
+    <span class="n">cpu</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">cpu</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">cpu_times</span><span class="p">()</span><span class="o">.</span><span class="n">_asdict</span><span class="p">())</span>
+    <span class="n">cpu</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;percent&#39;</span><span class="p">:</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">()})</span>
+    <span class="n">dic_ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;cpu&#39;</span><span class="p">:</span> <span class="n">cpu</span><span class="p">})</span>
+
+    <span class="c"># Coleta so dados da rede</span>
+    <span class="n">dic_main</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">network_io_counters</span><span class="p">(</span><span class="n">pernic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">():</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">_asdict</span><span class="p">())</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s">&quot;/sbin/ifconfig&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+            <span class="n">padrao</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;inet end.: (.*?) .*Masc:(.*)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="n">padrao</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">padrao</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;ipv4&#39;</span><span class="p">:</span> <span class="n">ip</span><span class="p">,</span> <span class="s">&#39;masc&#39;</span><span class="p">:</span> <span class="n">mask</span><span class="p">})</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">dic_main</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">i</span><span class="p">:</span> <span class="n">dic</span><span class="p">})</span>
+
+    <span class="n">dic_ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;netw&#39;</span><span class="p">:</span> <span class="n">dic_main</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">dic_ret</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">WSDroid 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Maurício José da Silva.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

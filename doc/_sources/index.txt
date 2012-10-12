@@ -1,0 +1,39 @@
+.. WSDroid documentation master file, created by
+   sphinx-quickstart on Fri Oct 12 11:15:09 2012.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to WSDroid's documentation!
+===================================
+
+WebService RESTFull
+
+WebService desenvolvido utilizando o servidor web Flask, que permite ao 
+desenvoledor adaptálo as suas necessidades. 
+A aplicação é composta basicamente por três arquivos, que são: settings.py,
+application.py e webInfo.py. No arquivo settings.py contém as variávei de
+configuração da aplicação, permitindo que o usuário ajuste os parâmetro
+essenciais de forma a satisfazer o ambiente ao qual a aplicação irá rodar.
+No arquivo application.py, contém a implementação dos métodos definidos no
+arquivo settings.py, cada função implementada neste arquivo deve retornar
+um objeto no formato que o usuário deseja que o cliente receba. Trabalhando
+com estes dois arquivo o usuário pode criar um webservice para disponibilizar
+a informação que necessita, não sendo necessário alterar o código presente no
+arquivo webInfo.py.
+
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   application
+   webInfo
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

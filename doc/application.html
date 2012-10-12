@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Funcionalidades &mdash; WSDroid 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="WSDroid 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="WebService" href="webInfo.html" />
+    <link rel="prev" title="Welcome to WSDroid’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="webInfo.html" title="WebService"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to WSDroid’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">WSDroid 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="funcionalidades">
+<h1>Funcionalidades<a class="headerlink" href="#funcionalidades" title="Permalink to this headline">¶</a></h1>
+<p>No arquivo application.py deve ser implementado os métodos declarados no mapa
+de URLs do arquivo settings.py. Quando o WebService recebe uma requisição
+HTTP, ele verifica se a url e o método http (GET, POST, PUT, DELETE) recebido
+são válidos, se sim, ele executa a função mapeada para o url consultada e
+retorna para o cliente o resultado da função.
+Na aplicação implementada, o webService recebe requisições HTTP solicitando
+informação do hardware do servidor, e estas informações são retornadas
+utilizando o protocolo JSON.</p>
+<span class="target" id="module-webService.application"></span><dl class="function">
+<dt id="webService.application.get_index">
+<tt class="descclassname">webService.application.</tt><tt class="descname">get_index</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/webService/application.html#get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.application.get_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coleta as informações da Memória, HD, Rede e Processadores do computador
+e retorna um dicionário contendo todas as informações:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="webService.application.list_cpu">
+<tt class="descclassname">webService.application.</tt><tt class="descname">list_cpu</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/webService/application.html#list_cpu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.application.list_cpu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retorna informações do processador. As informações são retornadas no
+formato JSON e contém os seguintes campos:</p>
+<div class="highlight-python"><pre>"cpu": {
+"idle": 38719.49,
+"softirq": 6.36,
+"irq": 0.0,
+"iowait": 347.69,
+"nice": 26.94,
+"percent": 28.2,
+"system": 264.54,
+"user": 922.46 }</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="webService.application.list_hd">
+<tt class="descclassname">webService.application.</tt><tt class="descname">list_hd</tt><big>(</big><em>index=None</em><big>)</big><a class="reference internal" href="_modules/webService/application.html#list_hd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.application.list_hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retorna informações do HD por completo se a url terminar com &#8216;hardDisk&#8217;
+ou retorna as informação de uma partição especifica se a url terminar
+com o ponto de montagem da partição. As informações são retornadas no
+formato JSON e contém os seguintes campos:</p>
+<div class="highlight-python"><pre>"hardDisk": {
+"sda5": {
+"used": 113527726080,
+"percent": 56.5,
+"free": 77170294784,
+"fstype": "ext4",
+"device": "/dev/sda5",
+"mountpoint": "/home",
+"total": 200903335936,
+"opts": "rw"}</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="webService.application.list_mem">
+<tt class="descclassname">webService.application.</tt><tt class="descname">list_mem</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/webService/application.html#list_mem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.application.list_mem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retorna informações da Memória. As informações são retornadas no
+formato JSON e contém os seguintes campos:</p>
+<div class="highlight-python"><pre>"memory": {
+"total": 3938222080,
+"available": 2748809216,
+"percent": 30.2,
+"used": 2607411200,
+"free": 1330810880,
+"active": 1424625664,
+"inactive": 882995200,
+"buffers": 333889536,
+"cached": 1084108800 }</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="webService.application.list_network">
+<tt class="descclassname">webService.application.</tt><tt class="descname">list_network</tt><big>(</big><em>index=None</em><big>)</big><a class="reference internal" href="_modules/webService/application.html#list_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.application.list_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retorna informações da interface de rede específicada na url
+no formato JSON:</p>
+<div class="highlight-python"><pre>"eth1": {
+"packets_sent": 40252,
+"packets_recv": 41426,
+"bytes_recv": 36079799,
+"dropout": 0,
+"bytes_sent": 6338471,
+"errout": 18,
+"ipv4": "192.168.1.100",
+"errin": 0,
+"dropin": 0,
+"masc": "255.255.255.0"}</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="webService.application.usage">
+<tt class="descclassname">webService.application.</tt><tt class="descname">usage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/webService/application.html#usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.application.usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retorna todas as informações do computador no formato JSON, caso a
+requisição não seja to tipo GET, ele retorna uma página mensagem
+informando que a página não foi encontrada.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to WSDroid&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="webInfo.html"
+                        title="next chapter">WebService</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/application.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="webInfo.html" title="WebService"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to WSDroid’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">WSDroid 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Maurício José da Silva.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

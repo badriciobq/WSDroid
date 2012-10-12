@@ -1,0 +1,22 @@
+WebService
+=========================================================================================
+
+Esta Classe disponibiliza via HTTP um webService RESTFULL. Configurando os 
+parâmetros necessário no arquivo settings.py podemos definir o IP e a PORTA,
+e ainda configurar se o servidor vai solicitar autenticação via HTTP ou se
+o seviço ficará disponível a todos.
+Caso a autenticação falhe, o servidor retorna no cabeçalho HTTP o código
+de erro 401, e como dado ele retorna uma mensagem JSON no Formato:
+{ "status": 401,
+"message": "Autenticated Failed"
+}
+
+Se a página requisitada não existir no servidor, ele retorna no cabeçalho
+HTTP o código de erro 404, juntamente com a mensagem:
+{ "status": 404,
+"message": "not found"
+}
+
+.. automodule:: webService.webInfo
+   :members:
+

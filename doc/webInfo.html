@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>WebService &mdash; WSDroid 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="WSDroid 0.1.0 documentation" href="index.html" />
+    <link rel="prev" title="Funcionalidades" href="application.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="application.html" title="Funcionalidades"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">WSDroid 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="webservice">
+<h1>WebService<a class="headerlink" href="#webservice" title="Permalink to this headline">¶</a></h1>
+<p>Esta Classe disponibiliza via HTTP um webService RESTFULL. Configurando os
+parâmetros necessário no arquivo settings.py podemos definir o IP e a PORTA,
+e ainda configurar se o servidor vai solicitar autenticação via HTTP ou se
+o seviço ficará disponível a todos.
+Caso a autenticação falhe, o servidor retorna no cabeçalho HTTP o código
+de erro 401, e como dado ele retorna uma mensagem JSON no Formato:
+{ &#8220;status&#8221;: 401,
+&#8220;message&#8221;: &#8220;Autenticated Failed&#8221;
+}</p>
+<p>Se a página requisitada não existir no servidor, ele retorna no cabeçalho
+HTTP o código de erro 404, juntamente com a mensagem:
+{ &#8220;status&#8221;: 404,
+&#8220;message&#8221;: &#8220;not found&#8221;
+}</p>
+<span class="target" id="module-webService.webInfo"></span><dl class="class">
+<dt id="webService.webInfo.webService">
+<em class="property">class </em><tt class="descclassname">webService.webInfo.</tt><tt class="descname">webService</tt><a class="reference internal" href="_modules/webService/webInfo.html#webService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.webInfo.webService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classe responsável para criar o webService.</p>
+<dl class="method">
+<dt id="webService.webInfo.webService.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/webService/webInfo.html#webService.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.webInfo.webService.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cria uma resposta para quando uma página de autenticação e insere o
+cabeçalho responsável por solicitar a autenticação aos agentes HTTP</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webService.webInfo.webService.check_auth">
+<tt class="descname">check_auth</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/webService/webInfo.html#webService.check_auth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.webInfo.webService.check_auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checa pela autenticação.
+(Método a implementar) A implementação corrente faz autenticação
+somente do usuário admin com a senha secret, para alterar a forma de
+autenticação este método deve ser implementado</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webService.webInfo.webService.link_url_method">
+<tt class="descname">link_url_method</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/webService/webInfo.html#webService.link_url_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.webInfo.webService.link_url_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Método utilizado para mapear as urls configuradas no arquivo settins
+com os funções criadas no arquivo applicaion.py</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webService.webInfo.webService.not_found">
+<tt class="descname">not_found</tt><big>(</big><em>error=None</em><big>)</big><a class="reference internal" href="_modules/webService/webInfo.html#webService.not_found"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.webInfo.webService.not_found" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cria uma resposta para quando uma página não for econtrada.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webService.webInfo.webService.requires_auth">
+<tt class="descname">requires_auth</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/webService/webInfo.html#webService.requires_auth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webService.webInfo.webService.requires_auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Método que verifica se o usuário e a senha recebidos via http são
+válidos, caso a autenticação seja rejeitada ele solicita nova
+autenticação via cabeçalho http.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="application.html"
+                        title="previous chapter">Funcionalidades</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/webInfo.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="application.html" title="Funcionalidades"
+             >previous</a> |</li>
+        <li><a href="index.html">WSDroid 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Maurício José da Silva.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+Funcionalidades
+========================================================================
+
+No arquivo application.py deve ser implementado os métodos declarados no mapa
+de URLs do arquivo settings.py. Quando o WebService recebe uma requisição 
+HTTP, ele verifica se a url e o método http (GET, POST, PUT, DELETE) recebido
+são válidos, se sim, ele executa a função mapeada para o url consultada e
+retorna para o cliente o resultado da função. 
+Na aplicação implementada, o webService recebe requisições HTTP solicitando
+informação do hardware do servidor, e estas informações são retornadas
+utilizando o protocolo JSON.
+
+.. automodule:: webService.application
+   :members:
