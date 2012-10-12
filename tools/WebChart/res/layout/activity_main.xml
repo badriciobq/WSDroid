@@ -1,0 +1,66 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="@string/title"
+            android:textSize="20dp"
+            android:onClick="updateALL"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btnhd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="@string/btnHD" 
+                android:onClick="updateHD"/>
+
+            <Button
+                android:id="@+id/btnMen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/btnMEM"
+                android:onClick="updateMEM"/>
+
+            <Button
+                android:id="@+id/btnCpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/btnCPU"
+                android:onClick="updateCPU"/>
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" >
+
+            <ImageView
+                android:id="@+id/testy_img"
+                android:layout_width="480dp"
+                android:layout_height="500dp"
+                android:layout_margin="20dp"
+                android:contentDescription="@string/description_chart"
+                android:padding="20dp" />
+        </HorizontalScrollView>
+    </LinearLayout>
+
+</ScrollView>

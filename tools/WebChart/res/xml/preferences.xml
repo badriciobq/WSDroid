@@ -1,0 +1,30 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="configurações do servidor" >
+        <EditTextPreference
+            android:defaultValue="http://192.168.1.100"
+            android:key="url"
+            android:summary="@string/url_summary"
+            android:title="@string/url_title" />
+        
+        <EditTextPreference
+            android:defaultValue="8001"
+            android:key="porta"
+            android:summary="@string/porta_summary"
+            android:title="@string/porta_title" />
+        
+        <EditTextPreference
+            android:defaultValue="admin"
+            android:key="usuario"
+            android:summary="@string/usuario_summary"
+            android:title="@string/usuario_title" />
+        
+        <EditTextPreference
+            android:defaultValue="secret"
+            android:key="senha"
+            android:summary="@string/senha_summary"
+            android:title="@string/senha_title" />
+        
+    </PreferenceCategory>
+
+</PreferenceScreen>
